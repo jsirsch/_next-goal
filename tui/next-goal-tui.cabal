@@ -1,0 +1,45 @@
+cabal-version: 3.0
+name:          next-goal-tui
+version:       0.1.0.0
+synopsis:      TUI for tracking the immediate next goal
+license:       MIT
+author:        jsirsch
+maintainer:    jsirsch
+build-type:    Simple
+
+common common-options
+  build-depends:
+      base >=4.7 && <5
+    , rio
+    , brick
+    , vty
+    , vty-crossplatform
+    , aeson
+    , microlens
+    , microlens-th
+    , time
+    , text
+    , directory
+    , filepath
+  default-language: Haskell2010
+  default-extensions:
+      NoImplicitPrelude
+      OverloadedStrings
+      RecordWildCards
+      TemplateHaskell
+      DeriveGeneric
+      DeriveAnyClass
+      ScopedTypeVariables
+      MultiParamTypeClasses
+      FlexibleContexts
+
+executable next-goal-tui
+  import:         common-options
+  main-is:        Main.hs
+  other-modules:
+      Types
+    , State
+    , UI.Draw
+    , UI.Event
+  hs-source-dirs: src
+  ghc-options:    -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
