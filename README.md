@@ -1,25 +1,34 @@
 # Next Goal
 
-A Haskell Brick TUI application using RIO for tracking your next goal.
+`next-goal` is an application ecosystem designed to help you track and focus on your immediate next goal. This repository is structured as a monorepo containing the various components of the application.
 
-## Description
+## Components
 
-`next-goal` is a terminal user interface (TUI) application designed to help you focus on your immediate next goal. Built with [Haskell](https://www.haskell.org/), [Brick](https://hackage.haskell.org/package/brick), and [RIO](https://hackage.haskell.org/package/rio), it provides a robust and interactive experience directly from your terminal.
+Currently planned and implemented components:
 
-## Features
+- **[`tui/`](tui/)**: A terminal user interface (TUI) client built in Haskell using the Brick and RIO libraries.
+- *(Future)* **Backend**: A Kafka-based backend for event streaming and syncing goals.
+- *(Future)* **Web UI**: A web-based frontend client.
 
-- **TUI Interface**: Fast, keyboard-driven interface using the Brick library.
-- **Goal Tracking**: Keep track of the immediate next goal you are working on.
-- **Robust Architecture**: Built on top of the RIO standard library for safe, efficient, and well-structured Haskell development.
+## Setup & Development
 
-## Prerequisites
+This project uses [Nix](https://nixos.org/) for managing development environments and dependencies to ensure consistency across all components.
 
-- [GHC](https://www.haskell.org/ghc/) (Glasgow Haskell Compiler)
-- [Cabal](https://www.haskell.org/cabal/) or [Stack](https://docs.haskellstack.org/en/stable/)
+### Using Nix Flakes
 
-## Building and Running
+If you have Nix with Flakes enabled, you can enter the unified development shell (which provides tools like GHC, Cabal, Haskell Language Server, and Vulnix) by running:
 
-*Instructions for building and running will be added as the project structure is fleshed out (e.g., using Stack or Cabal).*
+```bash
+nix develop
+```
+
+You can also run security checks on the flake using the configured Vulnix app:
+
+```bash
+nix run .#vulnix-scan
+```
+
+*(For non-flake setups, `shell.nix` is provided for backward compatibility. Run `nix-shell`.)*
 
 ## License
 
