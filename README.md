@@ -19,14 +19,20 @@ flowchart TD
         Web[Web UI<br/>Future]
     end
 
-    subgraph Storage
+    subgraph Storage & Backend
         LocalFile[(Local JSON State<br/>Current Mock)]
         EventStream[(Kafka Event Stream<br/>Future)]
+    end
+
+    subgraph External
+        Calendar[Calendar Service<br/>Future Integration]
     end
 
     TUI -->|Reads/Writes| LocalFile
     TUI -.->|Future Sync| EventStream
     Web -.->|Future Sync| EventStream
+    
+    Calendar -.->|Syncs Scheduled Goals| EventStream
 ```
 
 ## Setup & Development
