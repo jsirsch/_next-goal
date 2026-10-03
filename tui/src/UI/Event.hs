@@ -7,6 +7,7 @@ import Types
 import Brick
 import qualified Brick.Widgets.Edit as E
 import qualified Graphics.Vty as V
+import qualified Data.Text as T
 import Lens.Micro ((^.), (.~), (%~))
 
 handleEvent :: BrickEvent () e -> EventM () AppState ()
@@ -23,8 +24,8 @@ handleCreationEvent (V.EvKey V.KEsc []) =
 handleCreationEvent (V.EvKey V.KEnter []) = do
   st <- get
   let textLines = E.getEditContents (st ^. asGoalInput)
-      title = RIO.unlines textLines
-  unless (RIO.null (RIO.strip title)) $ do
+      title = T.unlines textLines
+  unless (T.null (T.strip title)) $ do
     let nextId = if RIO.null (st ^. asGoals) then 1 else maximum (map goalId (st ^. asGoals)) + 1
         newGoal = Goal nextId title StatusTodo Nothing Nothing
         newGoals = newGoal : (st ^. asGoals)

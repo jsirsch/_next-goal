@@ -7,6 +7,7 @@ import Brick
 import qualified Brick.Widgets.Border as B
 import qualified Brick.Widgets.Center as C
 import qualified Brick.Widgets.Edit as E
+import qualified Data.Text as T
 import Lens.Micro ((^.))
 
 drawUI :: AppState -> [Widget ()]
@@ -53,7 +54,7 @@ drawCreationModal st =
   C.centerLayer $
   B.borderWithLabel (str " Create New Goal ") $
   padAll 1 $
-  vBox [ str "Title: " <+> E.renderEditor (str . RIO.unlines) True (st ^. asGoalInput)
+  vBox [ str "Title: " <+> E.renderEditor (txt . T.unlines) True (st ^. asGoalInput)
        , str "Press Enter to save, Esc to cancel."
        ]
 
