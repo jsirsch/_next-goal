@@ -7,8 +7,8 @@ pkgs.writeShellScriptBin "vulnix-scan" ''
   if [ $# -eq 0 ]; then
     echo "No arguments provided. Building current flake and scanning the output..."
     nix build .
-    ${pkgs.vulnix}/bin/vulnix ./result
+    ${pkgs.vulnix}/bin/vulnix -w ./nix/vulnix-whitelist.toml ./result
   else
-    ${pkgs.vulnix}/bin/vulnix "$@"
+    ${pkgs.vulnix}/bin/vulnix -w ./nix/vulnix-whitelist.toml "$@"
   fi
 ''

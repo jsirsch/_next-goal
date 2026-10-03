@@ -1,0 +1,84 @@
+# Vulnix Whitelist
+
+# --- Haskell Package Name Collisions (False Positives) ---
+
+[[whitelist]]
+name = "async"
+comment = "False positive: CVE-2021-43138 belongs to the Node.js 'async' package. This is the Haskell 'async' concurrency library."
+
+[[whitelist]]
+name = "word-wrap"
+comment = "False positive: CVE-2023-26115 belongs to the Node.js 'word-wrap' package. This is the Haskell 'word-wrap' library."
+
+[[whitelist]]
+name = "stringbuilder"
+comment = "False positive: CVE-2024-21524 belongs to the Node.js 'stringbuilder' package. This is the Haskell 'stringbuilder' library."
+
+[[whitelist]]
+name = "hedgehog"
+comment = "False positive: CVE-2021-4276 applies to a completely different software project named hedgehog. This is the Haskell property testing framework."
+
+[[whitelist]]
+name = "Diff"
+comment = "False positive: This is the Haskell 'Diff' library (version 1.0.2). The CVEs listed belong to completely different systems."
+
+
+# --- Build-Time & System Dependencies (No Runtime Attack Surface) ---
+# Since Vulnix is recursively scanning the derivations (.drv), it picks up
+# compilers, build systems, and script interpreters used just to build the app.
+# None of these are exposed to end users via our TUI.
+
+[[whitelist]]
+name = "cargo"
+comment = "Build-time Rust package manager. Irrelevant to our Haskell TUI runtime."
+
+[[whitelist]]
+name = "bison"
+comment = "Build-time C parser generator. Not exposed in the application."
+
+[[whitelist]]
+name = "ninja"
+comment = "Build system for C/C++. Only runs during the compilation phase."
+
+[[whitelist]]
+name = "patch"
+comment = "Build utility for applying diffs to source code."
+
+[[whitelist]]
+name = "coreutils"
+comment = "System utilities used strictly for build scripting."
+
+[[whitelist]]
+name = "dash"
+comment = "Lightweight shell used for running build scripts."
+
+[[whitelist]]
+name = "perl"
+comment = "Scripting language used heavily in Nix build phases."
+
+[[whitelist]]
+name = "lua"
+comment = "Scripting language pulled as a transitive build dependency."
+
+[[whitelist]]
+name = "jq"
+comment = "JSON processor used in build scripts."
+
+[[whitelist]]
+name = "gzip"
+comment = "Compression utility used during package extraction."
+
+[[whitelist]]
+name = "unzip"
+comment = "Archive extraction tool used during build."
+
+
+# --- Transitive C Libraries (Low Risk for our App) ---
+
+[[whitelist]]
+name = "libssh2"
+comment = "SSH library likely pulled in by cargo/git during the build process. Our local TUI app does not initiate or receive SSH connections."
+
+[[whitelist]]
+name = "zlib"
+comment = "C compression library. Our local TUI application does not expose network endpoints or process untrusted compressed payloads."
