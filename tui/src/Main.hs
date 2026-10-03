@@ -3,6 +3,7 @@ module Main where
 import RIO
 import Types
 import State
+import Store
 import UI.Draw
 import UI.Event
 import Brick
@@ -24,7 +25,8 @@ main = do
   withLogFunc logOptions $ \lf -> do
     let env = AppEnv { appLogFunc = lf, appDataDir = "." }
     runRIO env $ do
+      goals <- loadGoals
       initialVty <- liftIO $ VCP.mkVty V.defaultConfig
-      _finalState <- liftIO $ customMain initialVty (VCP.mkVty V.defaultConfig) Nothing app initialState
-      -- We can save state to disk here later
+      let st = initialState env goals
+      _finalState <- liftIO $ customMain initialVty (VCP.mkVty V.defaultConfig) Nothing app st
       pure ()

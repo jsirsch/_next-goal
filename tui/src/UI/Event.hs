@@ -2,6 +2,7 @@ module UI.Event (handleEvent) where
 
 import RIO
 import State
+import Store
 import Types
 import Brick
 import qualified Brick.Widgets.Edit as E
@@ -20,7 +21,19 @@ handleCreationEvent :: V.Event -> EventM () AppState ()
 handleCreationEvent (V.EvKey V.KEsc []) =
   modify $ (asIsCreating .~ False) . (asGoalInput %~ E.applyEdit (const [])) -- clear input
 handleCreationEvent (V.EvKey V.KEnter []) = do
-  -- TODO: Save goal to state and disk
+  st <- get
+  let textLines = E.getEditContents (st ^. asGoalInput)
+      title = RIO.unlines textLines
+  unless (RIO.null (RIO.strip title)) $ do
+    let nextId = if RIO.null (st ^. asGoals) then 1 else maximum (map goalId (st ^. asGoals)) + 1
+        newGoal = Goal nextId title StatusTodo Nothing Nothing
+        newGoals = newGoal : (st ^. asGoals)
+    
+    -- Save to disk
+    liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
+    
+    modify $ asGoals .~ newGoals
+  
   modify $ (asIsCreating .~ False) . (asGoalInput %~ E.applyEdit (const []))
 handleCreationEvent e = do
   zoom asGoalInput $ E.handleEditorEvent (VtyEvent e)

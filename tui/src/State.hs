@@ -12,15 +12,17 @@ data AppState = AppState
   , _asCurrentPage :: Page
   , _asIsCreating  :: Bool
   , _asGoalInput   :: E.Editor Text ()
+  , _asEnv         :: AppEnv
   }
 
 makeLenses ''AppState
 
--- | Initial empty state
-initialState :: AppState
-initialState = AppState
-  { _asGoals       = []
+-- | Initial state with injected env and loaded goals
+initialState :: AppEnv -> [Goal] -> AppState
+initialState env goals = AppState
+  { _asGoals       = goals
   , _asCurrentPage = PageNextGoal
   , _asIsCreating  = False
   , _asGoalInput   = E.editor () (Just 1) ""
+  , _asEnv         = env
   }

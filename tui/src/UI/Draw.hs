@@ -29,10 +29,18 @@ drawUI st =
   in layers
 
 drawNextGoal :: AppState -> Widget ()
-drawNextGoal _st = C.center $ B.borderWithLabel (str " Next Goal ") $ padAll 2 (str "No goal prioritized yet.")
+drawNextGoal st = C.center $ B.borderWithLabel (str " Next Goal ") $ padAll 2 $
+  case listToMaybe (st ^. asGoals) of
+    Nothing -> str "No goals found. Press 'n' to create one."
+    Just g  -> vBox [ str "Target: " <+> txt (goalTitle g)
+                    , str "Status: " <+> str (show (goalStatus g))
+                    ]
 
 drawBacklog :: AppState -> Widget ()
-drawBacklog _st = C.center $ str "Prioritized Backlog (WIP)"
+drawBacklog st = C.center $ B.borderWithLabel (str " Prioritized Backlog ") $ padAll 2 $
+  if RIO.null (st ^. asGoals)
+    then str "Backlog is empty."
+    else vBox $ map (\g -> str ("- ") <+> txt (goalTitle g)) (st ^. asGoals)
 
 drawKanban :: AppState -> Widget ()
 drawKanban _st = C.center $ str "Kanban Board (WIP)"

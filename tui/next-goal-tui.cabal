@@ -39,6 +39,7 @@ executable next-goal-tui
   other-modules:
       Types
     , State
+    , Store
     , UI.Draw
     , UI.Event
   hs-source-dirs: src
