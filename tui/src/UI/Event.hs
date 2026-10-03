@@ -20,13 +20,13 @@ handleEvent _ = pure ()
 
 handleCreationEvent :: V.Event -> EventM () AppState ()
 handleCreationEvent (V.EvKey V.KEsc []) =
-  modify $ (asIsCreating .~ False) . (asGoalInput %~ E.applyEdit (const [])) -- clear input
+  modify $ (asIsCreating .~ False) . (asGoalInput .~ E.editor () (Just 1) "") -- clear input
 handleCreationEvent (V.EvKey V.KEnter []) = do
   st <- get
   let textLines = E.getEditContents (st ^. asGoalInput)
       title = T.unlines textLines
   unless (T.null (T.strip title)) $ do
-    let nextId = if RIO.null (st ^. asGoals) then 1 else maximum (map goalId (st ^. asGoals)) + 1
+    let nextId = if RIO.null (st ^. asGoals) then 1 else foldr (\g acc -> max (goalId g) acc) 0 (st ^. asGoals) + 1
         newGoal = Goal nextId title StatusTodo Nothing Nothing
         newGoals = newGoal : (st ^. asGoals)
     
@@ -35,7 +35,7 @@ handleCreationEvent (V.EvKey V.KEnter []) = do
     
     modify $ asGoals .~ newGoals
   
-  modify $ (asIsCreating .~ False) . (asGoalInput %~ E.applyEdit (const []))
+  modify $ (asIsCreating .~ False) . (asGoalInput .~ E.editor () (Just 1) "")
 handleCreationEvent e = do
   zoom asGoalInput $ E.handleEditorEvent (VtyEvent e)
 
