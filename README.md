@@ -10,6 +10,25 @@ Currently planned and implemented components:
 - *(Future)* **Backend**: A Kafka-based backend for event streaming and syncing goals.
 - *(Future)* **Web UI**: A web-based frontend client.
 
+### Architecture Overview
+
+```mermaid
+flowchart TD
+    subgraph Clients
+        TUI[Terminal UI<br/>Haskell/Brick]
+        Web[Web UI<br/>Future]
+    end
+
+    subgraph Storage
+        LocalFile[(Local JSON State<br/>Current Mock)]
+        EventStream[(Kafka Event Stream<br/>Future)]
+    end
+
+    TUI -->|Reads/Writes| LocalFile
+    TUI -.->|Future Sync| EventStream
+    Web -.->|Future Sync| EventStream
+```
+
 ## Setup & Development
 
 This project uses [Nix](https://nixos.org/) for managing development environments and dependencies to ensure consistency across all components.

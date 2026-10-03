@@ -19,6 +19,34 @@ If you are not using the Nix development shell provided in the root of the repos
 
 ## Architecture
 
-*Details about the specific Brick architecture, state management, and interaction with the (future) backend services will be documented here as the implementation progresses.*
+The TUI utilizes a multi-page routing structure, allowing the user to seamlessly switch between different views of their goals, while global actions (like creating a new goal) are accessible from anywhere as an overlay.
+
+### Application Pages
+
+```mermaid
+flowchart TD
+    Global[Global App State]
+    
+    subgraph Pages
+        NextGoal[1: Next Goal Page<br/>Focus View]
+        Backlog[2: Prioritized Backlog<br/>List View]
+        Kanban[3: Kanban Board<br/>Status View]
+        Hierarchy[4: Goal Hierarchy<br/>Progress View]
+        Help[h: Help Page<br/>Shortcut Reference]
+    end
+
+    Global -- "Press 1" --> NextGoal
+    Global -- "Press 2" --> Backlog
+    Global -- "Press 3" --> Kanban
+    Global -- "Press 4" --> Hierarchy
+    Global -- "Press h" --> Help
+    
+    Global -- "Press n" --> Modal[Create Goal Modal<br/>Overlay]
+    
+    NextGoal -.-> Modal
+    Backlog -.-> Modal
+    Kanban -.-> Modal
+    Hierarchy -.-> Modal
+```
 
 As the Next Goal ecosystem grows, this TUI will integrate with future backend services (such as a Kafka-based event stream) to sync and manage goals across different interfaces alongside other potential clients (like a Web UI).
