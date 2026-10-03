@@ -1,0 +1,46 @@
+{
+  description = "next-goal: A Haskell Brick TUI using RIO";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        vulnix-scan = import ./nix/vulnix-scan.nix { inherit pkgs; };
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            ghc
+            cabal-install
+            haskell-language-server
+            hlint
+            vulnix-scan
+          ];
+        };
+
+        apps.vulnix-scan = {
+          type = "app";
+          program = "${vulnix-scan}/bin/vulnix-scan";
+        };
+
+        checks = {
+          vulnix-check = pkgs.runCommand "vulnix-check" {} ''
+            echo "Ensuring vulnix runs..."
+            ${pkgs.vulnix}/bin/vulnix --version
+            touch $out
+          '';
+          
+          # Placeholder for when Haskell files are added
+          # hlint-check = pkgs.runCommand "hlint-check" {} ''
+          #   ${pkgs.hlint}/bin/hlint ${self}
+          #   touch $out
+          # '';
+        };
+      }
+    );
+}
