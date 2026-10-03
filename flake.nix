@@ -11,11 +11,17 @@
       let
         pkgs = import nixpkgs { inherit system; };
         vulnix-scan = import ./nix/vulnix-scan.nix { inherit pkgs; };
+        
+        # Build the Haskell TUI project
+        next-goal-tui = pkgs.haskellPackages.callCabal2nix "next-goal-tui" ./tui {};
       in
       {
+        packages.default = next-goal-tui;
+
         devShells.default = pkgs.mkShell {
+          # Inherit dependencies from the package
+          inputsFrom = [ next-goal-tui.env ];
           buildInputs = with pkgs; [
-            ghc
             cabal-install
             haskell-language-server
             hlint
