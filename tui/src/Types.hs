@@ -10,6 +10,7 @@ data Page
   | PageBacklog
   | PageKanban
   | PageHierarchy
+  | PageHelp
   deriving (Show, Eq)
 
 -- | Status for Kanban

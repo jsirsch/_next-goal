@@ -32,4 +32,5 @@ handleGlobalEvent (V.EvKey (V.KChar '1') []) = modify (asCurrentPage .~ PageNext
 handleGlobalEvent (V.EvKey (V.KChar '2') []) = modify (asCurrentPage .~ PageBacklog)
 handleGlobalEvent (V.EvKey (V.KChar '3') []) = modify (asCurrentPage .~ PageKanban)
 handleGlobalEvent (V.EvKey (V.KChar '4') []) = modify (asCurrentPage .~ PageHierarchy)
+handleGlobalEvent (V.EvKey (V.KChar 'h') []) = modify (asCurrentPage .~ PageHelp)
 handleGlobalEvent _ = pure ()
