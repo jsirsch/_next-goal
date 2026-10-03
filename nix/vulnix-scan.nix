@@ -3,5 +3,12 @@
 pkgs.writeShellScriptBin "vulnix-scan" ''
   #!/usr/bin/env bash
   echo "Running vulnix scan..."
-  ${pkgs.vulnix}/bin/vulnix "$@"
+  
+  if [ $# -eq 0 ]; then
+    echo "No arguments provided. Building current flake and scanning the output..."
+    nix build .
+    ${pkgs.vulnix}/bin/vulnix ./result
+  else
+    ${pkgs.vulnix}/bin/vulnix "$@"
+  fi
 ''
