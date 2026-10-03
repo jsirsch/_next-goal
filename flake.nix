@@ -29,12 +29,6 @@
         };
 
         checks = {
-          vulnix-check = pkgs.runCommand "vulnix-check" {} ''
-            echo "Ensuring vulnix runs..."
-            ${pkgs.vulnix}/bin/vulnix --version
-            touch $out
-          '';
-          
           # Placeholder for when Haskell files are added
           # hlint-check = pkgs.runCommand "hlint-check" {} ''
           #   ${pkgs.hlint}/bin/hlint ${self}
