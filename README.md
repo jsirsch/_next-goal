@@ -14,9 +14,10 @@ Currently planned and implemented components:
 
 ```mermaid
 flowchart TD
-    subgraph Clients
+    subgraph Clients & APIs
         TUI[Terminal UI<br/>Haskell/Brick]
         Web[Web UI<br/>Future]
+        MCP[MCP Server<br/>Future AI API]
     end
 
     subgraph Storage & Backend
@@ -26,13 +27,16 @@ flowchart TD
 
     subgraph External
         Calendar[Calendar Service<br/>Future Integration]
+        AI[AI Assistant<br/>e.g. Antigravity]
     end
 
     TUI -->|Reads/Writes| LocalFile
     TUI -.->|Future Sync| EventStream
     Web -.->|Future Sync| EventStream
+    MCP -.->|Queries/Updates Goals| EventStream
     
     Calendar -.->|Syncs Scheduled Goals| EventStream
+    AI -.->|Uses Tools| MCP
 ```
 
 ## Setup & Development
