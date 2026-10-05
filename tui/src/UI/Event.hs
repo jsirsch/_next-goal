@@ -28,7 +28,7 @@ handleCreationEvent (V.EvKey V.KEnter []) = do
   unless (T.null (T.strip title)) $ do
     let nextId = if RIO.null (st ^. asGoals) then 1 else foldr (\g acc -> max (goalId g) acc) 0 (st ^. asGoals) + 1
         newGoal = Goal nextId title StatusTodo Nothing Nothing
-        newGoals = newGoal : (st ^. asGoals)
+        newGoals = (st ^. asGoals) ++ [newGoal]
     
     -- Save to disk
     liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
