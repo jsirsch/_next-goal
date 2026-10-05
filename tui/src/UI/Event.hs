@@ -8,6 +8,7 @@ import Brick
 import qualified Brick.Widgets.Edit as E
 import qualified Graphics.Vty as V
 import qualified Data.Text as T
+import qualified Data.List as L
 import Lens.Micro ((^.), (.~), (%~))
 
 handleEvent :: BrickEvent () e -> EventM () AppState ()
@@ -59,7 +60,7 @@ handleBacklogEvent e = do
       idx = st ^. asSelectedGoalIndex
       
       swapAdjacent i lst =
-        let (before, rest) = splitAt i lst
+        let (before, rest) = L.splitAt i lst
         in case rest of
              (x:y:after) -> before ++ (y:x:after)
              _           -> lst -- Fallback if out of bounds
