@@ -8,7 +8,6 @@ import Brick
 import qualified Brick.Widgets.Edit as E
 import qualified Graphics.Vty as V
 import qualified Data.Text as T
-import qualified Data.List as L
 import Lens.Micro ((^.), (.~), (%~))
 
 handleEvent :: BrickEvent () e -> EventM () AppState ()
@@ -59,11 +58,11 @@ handleBacklogEvent e = do
   let goalsLen = length (st ^. asGoals)
       idx = st ^. asSelectedGoalIndex
       
-      swap idx1 idx2 lst =
-        let val1 = lst L.!! idx1
-            val2 = lst L.!! idx2
-            replace i x xs = take i xs ++ [x] ++ drop (i+1) xs
-        in replace idx1 val2 (replace idx2 val1 lst)
+      swapAdjacent i lst =
+        let (before, rest) = splitAt i lst
+        in case rest of
+             (x:y:after) -> before ++ (y:x:after)
+             _           -> lst -- Fallback if out of bounds
 
   case e of
     -- Move cursor down
@@ -76,21 +75,21 @@ handleBacklogEvent e = do
     
     -- Swap down
     V.EvKey (V.KChar 'J') [] | idx < goalsLen - 1 -> do
-      let newGoals = swap idx (idx + 1) (st ^. asGoals)
+      let newGoals = swapAdjacent idx (st ^. asGoals)
       liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
       modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx + 1))
     V.EvKey V.KDown [V.MShift] | idx < goalsLen - 1 -> do
-      let newGoals = swap idx (idx + 1) (st ^. asGoals)
+      let newGoals = swapAdjacent idx (st ^. asGoals)
       liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
       modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx + 1))
       
     -- Swap up
     V.EvKey (V.KChar 'K') [] | idx > 0 -> do
-      let newGoals = swap idx (idx - 1) (st ^. asGoals)
+      let newGoals = swapAdjacent (idx - 1) (st ^. asGoals)
       liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
       modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx - 1))
     V.EvKey V.KUp [V.MShift] | idx > 0 -> do
-      let newGoals = swap idx (idx - 1) (st ^. asGoals)
+      let newGoals = swapAdjacent (idx - 1) (st ^. asGoals)
       liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
       modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx - 1))
       
