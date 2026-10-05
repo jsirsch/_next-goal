@@ -35,3 +35,7 @@ cabal.project.local~
 # Nix
 result
 result-*
+
+
+# Data Files
+goals.json
