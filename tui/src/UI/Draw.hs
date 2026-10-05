@@ -41,7 +41,18 @@ drawBacklog :: AppState -> Widget ()
 drawBacklog st = C.center $ B.borderWithLabel (str " Prioritized Backlog ") $ padAll 2 $
   if RIO.null (st ^. asGoals)
     then str "Backlog is empty."
-    else vBox $ map (\g -> str ("- ") <+> txt (goalTitle g)) (st ^. asGoals)
+    else vBox $ map (drawGoalRow (st ^. asSelectedGoalIndex)) (zip [0..] (st ^. asGoals))
+
+drawGoalRow :: Int -> (Int, Goal) -> Widget ()
+drawGoalRow selectedIdx (idx, g) =
+  let isSelected = idx == selectedIdx
+      prioStr = "[Prio " <> show (idx + 1) <> "] "
+      idStr = "(ID: " <> show (goalId g) <> ") "
+      titleW = txt (goalTitle g)
+      rowStr = str prioStr <+> str idStr <+> titleW
+  in if isSelected
+       then str ">> " <+> rowStr
+       else str "   " <+> rowStr
 
 drawKanban :: AppState -> Widget ()
 drawKanban _st = C.center $ str "Kanban Board (WIP)"

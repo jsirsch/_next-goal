@@ -15,7 +15,10 @@ handleEvent (VtyEvent e) = do
   st <- get
   if st ^. asIsCreating
     then handleCreationEvent e
-    else handleGlobalEvent e
+    else do
+      if st ^. asCurrentPage == PageBacklog
+        then handleBacklogEvent e
+        else handleGlobalEvent e
 handleEvent _ = pure ()
 
 handleCreationEvent :: V.Event -> EventM () AppState ()
@@ -48,3 +51,47 @@ handleGlobalEvent (V.EvKey (V.KChar '3') []) = modify (asCurrentPage .~ PageKanb
 handleGlobalEvent (V.EvKey (V.KChar '4') []) = modify (asCurrentPage .~ PageHierarchy)
 handleGlobalEvent (V.EvKey (V.KChar 'h') []) = modify (asCurrentPage .~ PageHelp)
 handleGlobalEvent _ = pure ()
+
+handleBacklogEvent :: V.Event -> EventM () AppState ()
+handleBacklogEvent e = do
+  st <- get
+  let goalsLen = length (st ^. asGoals)
+      idx = st ^. asSelectedGoalIndex
+      
+      swap idx1 idx2 lst =
+        let val1 = lst !! idx1
+            val2 = lst !! idx2
+            replace i x xs = take i xs ++ [x] ++ drop (i+1) xs
+        in replace idx1 val2 (replace idx2 val1 lst)
+
+  case e of
+    -- Move cursor down
+    V.EvKey (V.KChar 'j') [] | idx < goalsLen - 1 -> modify $ asSelectedGoalIndex .~ (idx + 1)
+    V.EvKey V.KDown []       | idx < goalsLen - 1 -> modify $ asSelectedGoalIndex .~ (idx + 1)
+    
+    -- Move cursor up
+    V.EvKey (V.KChar 'k') [] | idx > 0 -> modify $ asSelectedGoalIndex .~ (idx - 1)
+    V.EvKey V.KUp []         | idx > 0 -> modify $ asSelectedGoalIndex .~ (idx - 1)
+    
+    -- Swap down
+    V.EvKey (V.KChar 'J') [] | idx < goalsLen - 1 -> do
+      let newGoals = swap idx (idx + 1) (st ^. asGoals)
+      liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
+      modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx + 1))
+    V.EvKey V.KDown [V.MShift] | idx < goalsLen - 1 -> do
+      let newGoals = swap idx (idx + 1) (st ^. asGoals)
+      liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
+      modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx + 1))
+      
+    -- Swap up
+    V.EvKey (V.KChar 'K') [] | idx > 0 -> do
+      let newGoals = swap idx (idx - 1) (st ^. asGoals)
+      liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
+      modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx - 1))
+    V.EvKey V.KUp [V.MShift] | idx > 0 -> do
+      let newGoals = swap idx (idx - 1) (st ^. asGoals)
+      liftIO $ runRIO (st ^. asEnv) $ saveGoals newGoals
+      modify $ (asGoals .~ newGoals) . (asSelectedGoalIndex .~ (idx - 1))
+      
+    -- Fallback to global events
+    _ -> handleGlobalEvent e
