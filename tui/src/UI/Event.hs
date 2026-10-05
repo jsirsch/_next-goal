@@ -8,6 +8,7 @@ import Brick
 import qualified Brick.Widgets.Edit as E
 import qualified Graphics.Vty as V
 import qualified Data.Text as T
+import qualified Data.List as L
 import Lens.Micro ((^.), (.~), (%~))
 
 handleEvent :: BrickEvent () e -> EventM () AppState ()
@@ -59,8 +60,8 @@ handleBacklogEvent e = do
       idx = st ^. asSelectedGoalIndex
       
       swap idx1 idx2 lst =
-        let val1 = lst !! idx1
-            val2 = lst !! idx2
+        let val1 = lst L.!! idx1
+            val2 = lst L.!! idx2
             replace i x xs = take i xs ++ [x] ++ drop (i+1) xs
         in replace idx1 val2 (replace idx2 val1 lst)
 
