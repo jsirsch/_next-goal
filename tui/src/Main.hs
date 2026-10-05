@@ -21,12 +21,13 @@ app = App
 
 main :: IO ()
 main = do
-  logOptions <- logOptionsHandle stderr False
-  withLogFunc logOptions $ \lf -> do
-    let env = AppEnv { appLogFunc = lf, appDataDir = "." }
-    runRIO env $ do
-      goals <- loadGoals
-      initialVty <- liftIO $ VCP.mkVty V.defaultConfig
-      let st = initialState env goals
-      _finalState <- liftIO $ customMain initialVty (VCP.mkVty V.defaultConfig) Nothing app st
-      pure ()
+  RIO.withFile "next-goal.log" RIO.AppendMode $ \logHandle -> do
+    logOptions <- logOptionsHandle logHandle False
+    withLogFunc logOptions $ \lf -> do
+      let env = AppEnv { appLogFunc = lf, appDataDir = "." }
+      runRIO env $ do
+        goals <- loadGoals
+        initialVty <- liftIO $ VCP.mkVty V.defaultConfig
+        let st = initialState env goals
+        _finalState <- liftIO $ customMain initialVty (VCP.mkVty V.defaultConfig) Nothing app st
+        pure ()

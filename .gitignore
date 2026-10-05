@@ -39,3 +39,6 @@ result-*
 
 # Data Files
 goals.json
+
+# Logs
+next-goal.log
